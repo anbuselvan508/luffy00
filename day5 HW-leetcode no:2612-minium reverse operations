@@ -1,0 +1,48 @@
+import java.util.*;
+
+class Solution {
+    public int[] minReverseOperations(int n, int p, int[] banned, int k) {
+        int[] ans = new int[n];
+        Arrays.fill(ans, -1);
+
+        boolean[] ban = new boolean[n];
+        for (int b : banned) ban[b] = true;
+
+        TreeSet<Integer>[] sets = new TreeSet[2];
+        sets[0] = new TreeSet<>();
+        sets[1] = new TreeSet<>();
+
+        for (int i = 0; i < n; i++) {
+            if (i != p && !ban[i]) {
+                sets[i & 1].add(i);
+            }
+        }
+
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(p);
+        ans[p] = 0;
+
+        while (!q.isEmpty()) {
+            int cur = q.poll();
+
+            int left = Math.max(cur - k + 1, 0);
+            int right = Math.min(cur, n - k);
+
+            int min = 2 * left + k - 1 - cur;
+            int max = 2 * right + k - 1 - cur;
+
+            TreeSet<Integer> set = sets[min & 1];
+
+            Integer next = set.ceiling(min);
+
+            while (next != null && next <= max) {
+                ans[next] = ans[cur] + 1;
+                q.offer(next);
+                set.remove(next);
+                next = set.ceiling(min);
+            }
+        }
+
+        return ans;
+    }
+}
