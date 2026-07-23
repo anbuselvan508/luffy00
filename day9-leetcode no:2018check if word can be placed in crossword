@@ -1,0 +1,82 @@
+class Solution {
+    public boolean placeWordInCrossword(char[][] board, String word) {
+        int m = board.length;
+        int n = board[0].length;
+
+        // Check rows
+        for (int i = 0; i < m; i++) {
+            int j = 0;
+            while (j < n) {
+                while (j < n && board[i][j] == '#') {
+                    j++;
+                }
+
+                int start = j;
+                while (j < n && board[i][j] != '#') {
+                    j++;
+                }
+
+                if (check(board, word, i, start, i, j - 1, true)) {
+                    return true;
+                }
+            }
+        }
+
+        // Check columns
+        for (int j = 0; j < n; j++) {
+            int i = 0;
+            while (i < m) {
+                while (i < m && board[i][j] == '#') {
+                    i++;
+                }
+
+                int start = i;
+                while (i < m && board[i][j] != '#') {
+                    i++;
+                }
+
+                if (check(board, word, start, j, i - 1, j, false)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean check(char[][] board, String word,
+                          int r1, int c1, int r2, int c2,
+                          boolean row) {
+
+        int len = row ? (c2 - c1 + 1) : (r2 - r1 + 1);
+
+        if (len != word.length()) {
+            return false;
+        }
+
+        // Forward direction
+        boolean ok = true;
+        for (int k = 0; k < len; k++) {
+            char ch = row ? board[r1][c1 + k] : board[r1 + k][c1];
+            if (ch != ' ' && ch != word.charAt(k)) {
+                ok = false;
+                break;
+            }
+        }
+        if (ok) {
+            return true;
+        }
+
+        // Reverse direction
+        ok = true;
+        for (int k = 0; k < len; k++) {
+            char ch = row ? board[r1][c1 + k] : board[r1 + k][c1];
+            if (ch != ' ' && ch != word.charAt(len - 1 - k)) {
+                ok = false;
+                break;
+            }
+        }
+
+        return ok;
+    }
+}
